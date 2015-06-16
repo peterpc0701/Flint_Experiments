@@ -108,9 +108,10 @@ object LRTest {
 
   def testOptimized(points: RDD[DataPoint]): Unit = {
     val cachedPoints = points.mapPartitions { iter =>
-      val chunk = new PointChunk(D)
+      val (iterOne ,iterTwo) = iter.duplicate
+      val chunk = new PointChunk(D,8*iterOne.length*(1+D))
       val dos = new DataOutputStream(chunk)
-      for (point <- iter) {
+      for (point <- iterTwo) {
         point.x.foreach(dos.writeDouble)
         dos.writeDouble(point.y)
       }
